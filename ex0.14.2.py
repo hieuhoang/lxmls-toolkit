@@ -2,24 +2,26 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 def get_err(f, s, w0, w1) :
-   ret = s - np.dot(f, w1) - w0
+   #ret = s - np.dot(f, w1) - w0
+   ret = np.dot(f, w0) + w1 - s
    ret *= ret
    ret = ret.sum()
    return ret
 
 def compute_grad(f, s, w0, w1) :
-  epsilon = 0.05
+  epsilon = 0.0005
   
-  errOrig = get_err(f, s, w0, w1)
+  fOrig = get_err(f, s, w0, w1)
   
   w0New = w0 + epsilon
   w1New = w1 + epsilon
   
-  err0 = get_err(f, s, w0New, w1)
-  err1 = get_err(f, s, w0, w1New)
+  f0 = get_err(f, s, w0New, w1)
+  f1 = get_err(f, s, w0, w1New)
+  print "f=", fOrig, f0, f1
   
-  grad0 = (err0 - errOrig) / epsilon
-  grad1 = (err1 - errOrig) / epsilon
+  grad0 = (f0 - fOrig) / epsilon
+  grad1 = (f1 - fOrig) / epsilon
 
   return np.array([grad0, grad1])
   
