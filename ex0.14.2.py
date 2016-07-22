@@ -1,4 +1,3 @@
-import lxmls.readers.galton as galton
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -39,6 +38,18 @@ def optimize(data):
      
   return oldWeights
   
+import lxmls.readers.galton as galton
 galton_data = galton.load()
    
+a=np.vstack(galton_data[:,0])
+b=np.vstack(galton_data[:,1])
+c = np.linalg.lstsq(a,b)
+#(array([[ 0.99654386]]), array([ 5003.81262763]), 1, array([ 2081.59013737]))
 
+a2 = np.array( [galton_data[:,0], np.ones(len(galton_data))] )
+c2 = np.linalg.lstsq(a2.T,b)
+#(array([[  0.64629058],
+#        [ 23.94153018]]),
+# array([ 4640.27261443]),
+# 2,
+# array([  2.08181288e+03,   7.96301870e-01]))
