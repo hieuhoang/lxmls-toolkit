@@ -82,21 +82,27 @@ class SequenceClassificationDecoder:
     # Emission scoress: (length, num_states) array
     # ----------
     def run_viterbi(self, initial_scores, transition_scores, final_scores, emission_scores):
+        print "initial_scores=", initial_scores
+        print "transition_scores=", transition_scores.shape, transition_scores
+        print "final_scores=", final_scores.shape, final_scores
+        print "emission_scores=", emission_scores.shape, emission_scores
 
         length = np.size(emission_scores, 0)  # Length of the sequence.
         num_states = np.size(initial_scores)  # Number of states.
 
         # Variables storing the Viterbi scores.
         viterbi_scores = np.zeros([length, num_states]) + logzero()
+        print "viterbi_scores=", viterbi_scores.shape, viterbi_scores
 
         # Variables storing the paths to backtrack.
         viterbi_paths = -np.ones([length, num_states], dtype=int)
+        print "viterbi_paths=", viterbi_paths
 
         # Most likely sequence.
         best_path = -np.ones(length, dtype=int)
 
         # Complete Exercise 2.8 
-        raise NotImplementedError("Complete Exercise 2.8")
+        #raise NotImplementedError("Complete Exercise 2.8")
 
         #### Little guide of the implementation ####################################
         # Initializatize the viterbi scores
@@ -112,7 +118,33 @@ class SequenceClassificationDecoder:
         #
         # return best_path and best_score
         ############################################################################
- 
+
+        # Initialization.
+        viterbi_scores[0, :] = emission_scores[0, :] + initial_scores
+        print "viterbi_scores=", viterbi_scores
+
+        for pos in xrange(1, length):
+            print "pos=", pos
+            for current_state in xrange(num_states):
+                print "current_state=", current_state
+
+                viterbi_scores[pos, current_state] = max(viterbi_scores[pos-1, :] + transition_scores[pos-1, current_state, :])
+                viterbi_scores[pos, current_state] += emission_scores[pos, current_state]
+
+                # emissScore = emission_scores[pos, current_state]
+                # maxTrans = -np.inf
+                # for prev_state in xrange(num_states):
+                #     prevViterbi = viterbi_scores[pos - 1, prev_state]
+                #     transScore = transition_scores[pos, prev_state, current_state]
+                #
+                #     if maxTrans < transScore + prevViterbi + emissScore:
+                #         maxTrans = transScore + prevViterbi + emissScore
+
+            #viterbi_scores[pos, current_state] = maxTrans
+
+        print "viterbi_scores=", viterbi_scores.shape, viterbi_scores
+        best_score = max(viterbi_scores[length - 1, :])
+
         return best_path, best_score
 
     def run_forward_backward(self, initial_scores, transition_scores, final_scores, emission_scores):
