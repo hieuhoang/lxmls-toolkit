@@ -121,29 +121,22 @@ class SequenceClassificationDecoder:
 
         # Initialization.
         viterbi_scores[0, :] = emission_scores[0, :] + initial_scores
-        print "viterbi_scores=", viterbi_scores
 
+        # Viterbi loop.
         for pos in xrange(1, length):
-            print "pos=", pos
             for current_state in xrange(num_states):
-                print "current_state=", current_state
-
-                viterbi_scores[pos, current_state] = max(viterbi_scores[pos-1, :] + transition_scores[pos-1, current_state, :])
+                viterbi_scores[pos, current_state] = \
+                    np.max(viterbi_scores[pos-1, :] + transition_scores[pos-1, current_state, :])
                 viterbi_scores[pos, current_state] += emission_scores[pos, current_state]
+                viterbi_paths[pos, current_state] = \
+                    np.argmax(viterbi_scores[pos-1, :] + transition_scores[pos-1, current_state, :])
+        # Termination.
+        best_score = np.max(viterbi_scores[length-1, :] + final_scores)
+        best_path[length-1] = np.argmax(viterbi_scores[length-1, :] + final_scores)
 
-                # emissScore = emission_scores[pos, current_state]
-                # maxTrans = -np.inf
-                # for prev_state in xrange(num_states):
-                #     prevViterbi = viterbi_scores[pos - 1, prev_state]
-                #     transScore = transition_scores[pos, prev_state, current_state]
-                #
-                #     if maxTrans < transScore + prevViterbi + emissScore:
-                #         maxTrans = transScore + prevViterbi + emissScore
-
-            #viterbi_scores[pos, current_state] = maxTrans
-
-        print "viterbi_scores=", viterbi_scores.shape, viterbi_scores
-        best_score = max(viterbi_scores[length - 1, :])
+        # Backtrack.
+        for pos in xrange(length-2, -1, -1):
+            best_path[pos] = viterbi_paths[pos+1, best_path[pos+1]]
 
         return best_path, best_score
 
