@@ -30,7 +30,7 @@ def optimize(data):
   s = data[:, 1]
   maxIter = 50
   oldWeights = np.array([0.1, 0.2])
-  
+
   for iter in xrange(maxIter):
      grads = compute_grad(f, s, oldWeights[0], oldWeights[1])
      newWeights = oldWeights + grads
