@@ -118,7 +118,7 @@ class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
             print "hat_final_features=", hat_final_features
 
         print "num_labels=", num_labels, "num_mistakes=", num_mistakes
-        print 
+        print
         return num_labels, num_mistakes
 
         # Complete Exercise 3.3
