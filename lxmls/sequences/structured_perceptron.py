@@ -40,8 +40,88 @@ class StructuredPerceptron(dsc.DiscriminativeSequenceClassifier):
             self.parameters = new_w
 
     def perceptron_update(self, sequence):
+        print "self.parameters=", len(self.parameters), self.parameters
+        print "sequence=", sequence
+        print "y_true=", sequence.y
 
-        # Complete Exercise 3.3 
+        num_labels = 0
+        num_mistakes = 0
+
+        predicted_sequence, _ = self.viterbi_decode(sequence)
+        print "predicted_sequence=", predicted_sequence
+
+        y_hat = predicted_sequence.y
+        print "y_hat=", y_hat
+
+        # Update initial features.
+        y_t_true = sequence.y[0]
+        y_t_hat = y_hat[0]
+        print "y_t_true=", y_t_true, "y_t_hat=", y_t_hat
+
+        if y_t_true != y_t_hat:
+            true_initial_features = self.feature_mapper.get_initial_features(sequence, y_t_true)
+            self.parameters[true_initial_features] += self.learning_rate
+            print "true_initial_features=", true_initial_features
+
+            hat_initial_features = self.feature_mapper.get_initial_features(sequence, y_t_hat)
+            self.parameters[hat_initial_features] -= self.learning_rate
+            print "hat_initial_features=", hat_initial_features
+
+        print "len=", len(sequence.x)
+        for pos in xrange(len(sequence.x)):
+            print "\npos=", pos
+            y_t_true = sequence.y[pos]
+            y_t_hat = y_hat[pos]
+            print "y_t_true=", y_t_true, "y_t_hat=", y_t_hat
+
+            # Update emission features.
+            num_labels += 1
+            if y_t_true != y_t_hat:
+                num_mistakes += 1
+                true_emission_features = self.feature_mapper.get_emission_features(sequence, pos, y_t_true)
+                self.parameters[true_emission_features] += self.learning_rate
+                hat_emission_features = self.feature_mapper.get_emission_features(sequence, pos, y_t_hat)
+                self.parameters[hat_emission_features] -= self.learning_rate
+                print "true_emission_features=", true_emission_features
+                print "hat_emission_features=", hat_emission_features
+
+            if pos > 0:
+                # update bigram features
+                # If true bigram != predicted bigram update bigram features
+                prev_y_t_true = sequence.y[pos-1]
+                prev_y_t_hat = y_hat[pos-1]
+                print "prev_y_t_true=", prev_y_t_true, "prev_y_t_hat=", prev_y_t_hat
+
+                if y_t_true != y_t_hat or prev_y_t_true != prev_y_t_hat:
+                    true_transition_features = self.feature_mapper.get_transition_features(
+                        sequence, pos - 1, y_t_true, prev_y_t_true)
+                    self.parameters[true_transition_features] += self.learning_rate
+                    hat_transition_features = self.feature_mapper.get_transition_features(
+                        sequence, pos - 1, y_t_hat, prev_y_t_hat)
+                    self.parameters[hat_transition_features] -= self.learning_rate
+                    print "true_transition_features=", true_transition_features
+                    print "hat_transition_features=", hat_transition_features
+
+        #final
+        pos = len(sequence.x)
+        y_t_true = sequence.y[pos - 1]
+        y_t_hat = y_hat[pos - 1]
+        print
+        print "pos=", pos, "y_t_true=", y_t_true, "y_t_hat=", y_t_hat
+
+        if y_t_true != y_t_hat:
+            true_final_features = self.feature_mapper.get_final_features(sequence, y_t_true)
+            self.parameters[true_final_features] += self.learning_rate
+            hat_final_features = self.feature_mapper.get_final_features(sequence, y_t_hat)
+            self.parameters[hat_final_features] -= self.learning_rate
+            print "true_final_features=", true_final_features
+            print "hat_final_features=", hat_final_features
+
+        print "num_labels=", num_labels, "num_mistakes=", num_mistakes
+        print 
+        return num_labels, num_mistakes
+
+        # Complete Exercise 3.3
         raise NotImplementedError("Complete Exercise 3.3")
 
     def save_model(self, dir):
