@@ -82,42 +82,21 @@ class SequenceClassificationDecoder:
     # Emission scoress: (length, num_states) array
     # ----------
     def run_viterbi(self, initial_scores, transition_scores, final_scores, emission_scores):
-        print "initial_scores=", initial_scores
-        print "transition_scores=", transition_scores.shape, transition_scores
-        print "final_scores=", final_scores.shape, final_scores
-        print "emission_scores=", emission_scores.shape, emission_scores
+
+        # ----------
+        # Solution to Exercise 2.8
 
         length = np.size(emission_scores, 0)  # Length of the sequence.
         num_states = np.size(initial_scores)  # Number of states.
 
         # Variables storing the Viterbi scores.
         viterbi_scores = np.zeros([length, num_states]) + logzero()
-        print "viterbi_scores=", viterbi_scores.shape, viterbi_scores
 
         # Variables storing the paths to backtrack.
         viterbi_paths = -np.ones([length, num_states], dtype=int)
-        print "viterbi_paths=", viterbi_paths
 
         # Most likely sequence.
         best_path = -np.ones(length, dtype=int)
-
-        # Complete Exercise 2.8 
-        #raise NotImplementedError("Complete Exercise 2.8")
-
-        #### Little guide of the implementation ####################################
-        # Initializatize the viterbi scores
-        #
-        # Do the double of the viterbi loop (lines 7 to 12 in the guide pdf)
-        # from 1 to length
-        #     from 0 to num_states
-        #       ...
-        #
-        # define the best_path and best_score
-        #
-        # backtrack the best_path using the viterbi paths (lines 17-18 pseudocode in the guide pdf)
-        #
-        # return best_path and best_score
-        ############################################################################
 
         # Initialization.
         viterbi_scores[0, :] = emission_scores[0, :] + initial_scores
@@ -139,6 +118,9 @@ class SequenceClassificationDecoder:
             best_path[pos] = viterbi_paths[pos+1, best_path[pos+1]]
 
         return best_path, best_score
+
+        # End of solution to Exercise 2.8
+        # ----------
 
     def run_forward_backward(self, initial_scores, transition_scores, final_scores, emission_scores):
         log_likelihood, forward = self.run_forward(initial_scores, transition_scores, final_scores, emission_scores)
