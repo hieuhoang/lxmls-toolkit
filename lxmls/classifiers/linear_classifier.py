@@ -24,6 +24,8 @@ class LinearClassifier:
         Computes the label for each data point
         """
         scores = np.dot(x, w)
+        #print "x=", x, "w=", w, "scores=", scores, "class=", np.argmax(scores, axis=1).transpose()
+
         return np.argmax(scores, axis=1).transpose()
 
     def test(self, x, w):

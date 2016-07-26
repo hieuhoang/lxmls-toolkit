@@ -4,8 +4,13 @@ import time
 sd = sds.SimpleDataSet(nr_examples=100, g1 = [[-1,-1],1], g2 = [[1,1],1], balance=0.5, split=[0.5,0,0.5])
 
 import lxmls.classifiers.perceptron as percc
+
+print "train", sd.train_X.shape, sd.train_y.shape
+
 perc = percc.Perceptron()
 params_perc_sd = perc.train(sd.train_X,sd.train_y)
+
+# predict
 y_pred_train = perc.test(sd.train_X,params_perc_sd)
 acc_train = perc.evaluate(sd.train_y, y_pred_train)
 y_pred_test = perc.test(sd.test_X,params_perc_sd)
