@@ -271,6 +271,7 @@ class DependencyFeatures:
             ff.append(f)
             k += 1
 
+        #print "ff=", ff
         return ff
 
     def lookup_fid(self, fname, add=False):

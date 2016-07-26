@@ -138,6 +138,9 @@ class HMM(sc.SequenceClassifier):
 
     def update_counts(self, sequence, state_posteriors, transition_posteriors):
         """ Used in the E-step in EM."""
+        print "sequence=", sequence, sequence.y, sequence.x
+        #print "state_posteriors=", state_posteriors
+        #print "transition_posteriors=", transition_posteriors
 
         # ----------
         # Solution to Exercise 2.10
