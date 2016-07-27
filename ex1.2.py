@@ -19,8 +19,8 @@ print "Perceptron Simple Dataset Accuracy train: %f test: %f"%(acc_train,acc_tes
 
 fig,axis = sd.plot_data()
 fig,axis = sd.add_line(fig,axis,params_perc_sd,"Perceptron","blue")
+fig.savefig("simple.pdf")
 fig.show()
 
 time.sleep(3)
 
-#fig.savefig("simple.pdf")
