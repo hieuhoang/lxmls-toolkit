@@ -97,6 +97,7 @@ class NumpyMLP:
         return tilde_z
 
     def grads(self, x, y):
+        #print "x=", x.shape, "y=", y
         """
        Computes the gradients of the network with respect to cross entropy
        error cost
@@ -104,25 +105,65 @@ class NumpyMLP:
 
         # Run forward and store activations for each layer
         activations = self.forward(x, all_outputs=True)
+        #print "activations=", len(activations)
+        for i in xrange(len(activations)):
+            arr = activations[i]
+            #print "activations ele", activations[i].shape
 
         # For each layer in reverse store the gradients for each parameter
         nabla_params = [None] * (2*self.n_layers)
 
-        for n in np.arange(self.n_layers-1, -1, -1):
+        #print "np=", np.shape
 
+        for n in np.arange(self.n_layers-1, -1, -1):
+            #print "n=", n
             # Get weigths and bias (always in even and odd positions)
             # Note that sometimes we need the weight from the next layer
             W = self.params[2*n]
             b = self.params[2*n+1]
+            #print "W=", W.shape, "b=", b.shape
+
             if n != self.n_layers-1:
                 W_next = self.params[2*(n+1)]
 
-           # Complete Exercise 5.2 
-           raise NotImplementedError("Complete Exercise 5.2")
+            # Complete Exercise 5.2
+            # If it is the last layer, compute the average cost gradient
+            # Otherwise, propagate the error backwards from the next layer
+            if n == self.n_layers - 1:
+                #print "last layer"
+                # NOTE: This assumes cross entropy cost
+                if self.actvfunc[n] == 'sigmoid':
+                    e = (activations[n] - y) / y.shape[0]
+                elif self.actvfunc[n] == 'softmax':
+                    I = index2onehot(y, W.shape[0])
+                    e = (activations[n] - I) / y.shape[0]
+            else:
+                e = np.dot(W_next.T, e)
+                # This is correct but confusing n+1 is n in the guide
+                e *= activations[n] * (1 - activations[n])
+            #print "e=", e.shape
 
-           # Store the gradients 
-           nabla_params[2*n]   = nabla_W
-           nabla_params[2*n+1] = nabla_b
+            # Weight gradient
+            nabla_W = np.zeros(W.shape)
+            for l in np.arange(e.shape[1]):
+                #print "l=", l
+                if n == 0:
+                    # For the first layer, the activation is the input
+                    nabla_W += np.outer(e[:, l], x[:, l])
+                else:
+                    nabla_W += np.outer(e[:, l], activations[n - 1][:, l])
+
+            # Bias gradient
+            nabla_b = np.sum(e, 1, keepdims=True)
+
+            #print "nabla_W=", nabla_W.shape
+            #print "nabla_b=", nabla_b.shape
+
+            #raise NotImplementedError("Complete Exercise 5.2")
+
+            # Store the gradients
+            nabla_params[2*n]   = nabla_W
+            nabla_params[2*n+1] = nabla_b
 
         return nabla_params
 
