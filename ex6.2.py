@@ -16,6 +16,8 @@ def np_square_n_steps(nr_steps):
 # Theano
 nr_steps = T.lscalar('nr_steps')
 print "nr_steps=", nr_steps
+print "T.arange=", T.arange(nr_steps)
+
 h, _ = theano.scan(fn=square, sequences=T.arange(nr_steps))
 #print "h=", h
 
