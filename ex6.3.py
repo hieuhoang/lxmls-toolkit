@@ -70,4 +70,7 @@ rnn_batch_update = theano.function([x, y], cost, updates=updates)
 print "rnn_prediction=", rnn_prediction
 print "rnn_batch_update=", rnn_batch_update
 
+nr_words = sum([len(seq.x) for seq in train_seq])
+print "nr_words=", nr_words
+
 
