@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import lxmls.readers.pos_corpus as pcc
 import lxmls.deep_learning.rnn as rnns
@@ -73,4 +74,24 @@ print "rnn_batch_update=", rnn_batch_update
 nr_words = sum([len(seq.x) for seq in train_seq])
 print "nr_words=", nr_words
 
+for i in range(n_iter):
+    print "iter=", i
+    #training
+    cost = 0
+    errors = 0
+    for n, seq in enumerate(train_seq):
+        #print "n=", n, "seq=", seq
+        cost += rnn_batch_update(seq.x, seq.y)
+        errors += sum(rnn_prediction(seq.x) != seq.y)
+    acc_train = 100*(1-errors*1./nr_words)
+    print "Epoch %d: Train cost %2.2f Acc %2.2f %%" % (i+1, cost, acc_train),
+
+    #eval
+    errors = 0
+    for n, seq in enumerate(dev_seq):
+        #print "n=", n, "seq=", seq
+        errors += sum(rnn_prediction(seq.x) != seq.y)
+    acc_dev = 100*(1-errors*1./nr_words)
+    print " Devel Acc %2.2f %%" % acc_dev
+    sys.stdout.flush()
 
